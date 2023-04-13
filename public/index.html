@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <!-- Bring in the BBC version of require.js -->
+        <script type="text/javascript" src="//static.bbc.co.uk/frameworks/requirejs/0.13.0/sharedmodules/require.js"></script>
+
+        <!-- Some useful json files tat contain the latest content for news/sport/eastenders -->
+        <script src="//static.int.bbc.co.uk/smp/js/series/eastenders.js"></script>
+        <script src="//static.int.bbc.co.uk/smp/js/news_switchers.js"></script>
+        <script src="//static.int.bbc.co.uk/smp/js/sport_switchers.js"></script>
+
+        <!-- Bring in bump-3, with the dependancies for jquery-1.9.1 and swfobject-2  -->
+        <script type="text/javascript">
+        bbcRequireMap = {
+            'jquery-1.9' : 'http://static.bbc.co.uk/frameworks/jquery/0.3.0/sharedmodules/jquery-1.9.1',
+            'swfobject-2' : 'http://static.bbc.co.uk/frameworks/swfobject/0.1.10/sharedmodules/swfobject-2',
+            'bump-3' : 'http://emp.bbci.co.uk/emp/bump-3/bump-3'
+        };
+        require({
+            paths: bbcRequireMap,
+            waitSeconds: 5
+        });
+        </script>
+        <style>
+            body {
+                font-family: Helvetica Neue, Helvetica, Arial;
+            }
+
+            .banner {
+                background-color: lightcoral;
+                border: 1px solid darkred;
+                margin: 0;
+                padding: 0.5em;
+                text-align: center;
+                color: darkred;
+            }
+
+            .banner a {
+                color: darkred;
+                font-weight: bold;
+                text-decoration: underline;
+            }
+
+            #mp {
+                width: 640px;
+            }
+
+            form {
+                margin-top: 20px;
+            }
+            #sample_div {
+                padding: 10px;
+                background: rgba(0,0,0,0.7);
+                color: #ffffff;
+                font-weight: bold;
+                position: absolute;
+                right: 0;
+            }
+
+        </style>
+    </head>
+
+    <body>
+        <!-- A helpful banner that gives you a link to set a cookie which forces the html5 player to load -->
+        <div class="banner require-smpj">
+            <a href='#' id='require-smpj'>Click here to change to SMPj</a>,required for this prototyte.
+        </div>
+
+        <!-- the element we want the player to be laoded in -->
+        <div id="mp"></div>
+
+        <form>
+            <input type="text" name="name" id="name">
+            <button id="update_name">Update name</button>
+        </form>
+
+        <script type="text/javascript">
+            require(['bump-3'],function ($) {
+
+                // set a plugin location so that we can easily host this page on different environments
+                var pluginLocation = window.location.origin + window.location.pathname.replace('index.html',''),
+
+                // specify which plugins we want to load - here we specify an html plugin
+                plugin = {
+                    html: pluginLocation + "SamplePlugin.js",
+                    // we can also pass data through to our plugin
+                    data: {
+                        name: 'Joe Bloggs'
+                    }
+                };
+
+                // the main settings object for the player
+                // see https://confluence.dev.bbc.co.uk/display/mp/SMP+Settings+Object
+                var settings = {
+                    product: 'news',
+                    ui : {},// the ui object can override a lot of default behaviours
+                    plugins : {
+                        toLoad : [plugin]
+                    },
+                    playlist: news_switchers[0].playlist, // load a news playlist from news_switchers.js
+                    responsive: true,
+                    superResponsive: true
+                };
+                
+
+                // create a player on our chosen element with our settings
+                var mediaPlayer = $('#mp').player(settings);
+
+                // load the player
+                mediaPlayer.load();
+
+                // force the htnl5 player cookie and reload the page if we click the link
+                $('#require-smpj').click(function(e) {
+                    document.cookie="bbcBumpForcePlayer=smphtml5;";
+                    window.location.reload();
+                });
+
+                // only show the html5 player cookie link if we haven't loaded an html5 player
+                mediaPlayer.bind('initialised', function(e) {
+                    if(mediaPlayer.name() != 'smphtml5') { $('.require-smpj').show(); }
+                });
+
+                $('#update_name').click(function(e) {
+                    e.preventDefault();
+                    var name = $('#name').val();
+
+                    // update the data in the player with our new name
+                    mediaPlayer.setData({ name: name});
+                });
+
+            });
+        </script>
+
+    </body>
+</html>
