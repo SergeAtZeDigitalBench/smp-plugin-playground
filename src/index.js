@@ -1,1 +1,1 @@
-console.log("plugin Script");
+console.log("my index file logic...");

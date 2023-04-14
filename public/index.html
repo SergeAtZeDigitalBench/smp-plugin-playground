@@ -41,6 +41,11 @@
           document.getElementById("mediaPlayer"),
           settings
         );
+
+        mediaPlayer.loadPlugin({
+          j2: "plugin.js",
+        });
+
         mediaPlayer.load();
       });
     </script>
