@@ -41,6 +41,16 @@
           document.getElementById("mediaPlayer"),
           settings
         );
+
+        mediaPlayer.loadPlugin(
+          {
+            j2: "plugin.js",
+          },
+          {
+            data: { chicken: "egg" },
+          }
+        );
+
         mediaPlayer.load();
       });
     </script>
