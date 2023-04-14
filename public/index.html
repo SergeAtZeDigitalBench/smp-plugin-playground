@@ -42,9 +42,14 @@
           settings
         );
 
-        mediaPlayer.loadPlugin({
-          j2: "plugin.js",
-        });
+        mediaPlayer.loadPlugin(
+          {
+            j2: "plugin.js",
+          },
+          {
+            data: { chicken: "egg" },
+          }
+        );
 
         mediaPlayer.load();
       });
