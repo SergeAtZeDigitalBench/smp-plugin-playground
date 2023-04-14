@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack serve"
+    "build": "webpack",
+    "serve": "webpack serve",
+    "dev": "yarn build && yarn serve"
   },
   "keywords": [],
   "author": "",
