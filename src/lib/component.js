@@ -1,19 +1,21 @@
 import { Store } from "../store/store.js";
+// We're importing the store Class here so we can test against it in the constructor
 
 export class Component {
   constructor(props = {}) {
-    /**
-     * @description If this Component class is the parent of another class,
-     * then that will have likely set its own method for render. If there is no method set,
-     * we create an empty method that will prevent things from breaking
-     * @type {Function}
-     */
-    this.render = this.render || (() => {});
+    let self = this;
 
+    // We're setting a render function as the one set by whatever inherits this base
+    // class or setting it to an empty by default. This is so nothing breaks if someone
+    // forgets to set it.
+    this.render = this.render || function () {};
+
+    // If there's a store passed in, subscribe to the state change
     if (props.store instanceof Store) {
-      props.store.events.subscribe("stateChange", () => this.render());
+      props.store.events.subscribe("stateChange", () => self.render());
     }
 
+    // Store the HTML element to attach the render to if set
     if (props.hasOwnProperty("element")) {
       this.element = props.element;
     }

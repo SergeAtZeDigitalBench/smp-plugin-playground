@@ -9,9 +9,15 @@ export class Status extends Component {
     });
   }
 
-  render = () => {
-    let suffix = store.state?.items?.length !== 1 ? "s" : "";
+  /**
+   * React to state changes and render the component's HTML
+   *
+   * @returns {void}
+   */
+  render() {
+    let self = this;
+    let suffix = store.state.items.length !== 1 ? "s" : "";
 
-    this.element.innerHTML = `${store.state?.items?.length} item${suffix}`;
-  };
+    self.element.innerHTML = `${store.state.items.length} item${suffix}`;
+  }
 }
