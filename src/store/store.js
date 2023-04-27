@@ -1,7 +1,7 @@
-import { PubSub } from "../lib/pubSub";
+import { PubSub } from "../lib/pubSub.js";
 
 export class Store {
-  constructor(params) {
+  constructor(params = {}) {
     this.events = new PubSub();
     this.actions = params?.actions || {};
     this.mutations = params?.mutations || {};
