@@ -15,17 +15,15 @@ export class List extends Component {
    *
    * @returns {void}
    */
-  render() {
-    let self = this;
-
+  render = () => {
     // If there are no items to show, render a little status instead
     if (store.state.items.length === 0) {
-      self.element.innerHTML = `<p class="no-items">You've done nothing yet 😢</p>`;
+      this.element.innerHTML = `<p class="no-items">You've done nothing yet 😢</p>`;
       return;
     }
 
     // Loop the items and generate a list of elements
-    self.element.innerHTML = `
+    this.element.innerHTML = `
             <ul class="app__items">
                 ${store.state.items
                   .map((item) => {
@@ -39,10 +37,10 @@ export class List extends Component {
 
     // Find all the buttons in the list and when they are clicked, we dispatch a
     // `clearItem` action which we pass the current item's index to
-    self.element.querySelectorAll("button").forEach((button, index) => {
+    this.element.querySelectorAll("button").forEach((button, index) => {
       button.addEventListener("click", () => {
         store.dispatch("clearItem", { index });
       });
     });
-  }
+  };
 }

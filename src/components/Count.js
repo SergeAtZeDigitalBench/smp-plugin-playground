@@ -14,7 +14,7 @@ export class Count extends Component {
    *
    * @returns {void}
    */
-  render() {
+  render = () => {
     let suffix = store.state.items.length !== 1 ? "s" : "";
     let emoji = store.state.items.length > 0 ? "🙌" : "😢";
 
@@ -23,5 +23,5 @@ export class Count extends Component {
             <span>${store.state.items.length}</span>
             <small>thing${suffix} today ${emoji}</small>
         `;
-  }
+  };
 }

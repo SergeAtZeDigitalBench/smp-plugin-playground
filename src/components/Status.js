@@ -14,10 +14,9 @@ export class Status extends Component {
    *
    * @returns {void}
    */
-  render() {
-    let self = this;
+  render = () => {
     let suffix = store.state.items.length !== 1 ? "s" : "";
 
-    self.element.innerHTML = `${store.state.items.length} item${suffix}`;
-  }
+    this.element.innerHTML = `${store.state.items.length} item${suffix}`;
+  };
 }
