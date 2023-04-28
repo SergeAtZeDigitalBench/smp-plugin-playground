@@ -1,58 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Koala and a Butterfly</title>
-    <script
-      type="text/javascript"
-      src="https://static.bbci.co.uk/frameworks/requirejs/0.13.0/sharedmodules/require.js"
-    ></script>
-    <script type="text/javascript">
-      bbcRequireMap = {
-        "bump-4": "https://emp.bbci.co.uk/emp/bump-4/bump-4",
-      };
-      require({ paths: bbcRequireMap, waitSeconds: 30 });
-    </script>
+    <title>Store vanilla JS</title>
+    <style>
+      ul {
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        row-gap: 16px;
+        margin: 24px;
+        font-size: 24px;
+      }
+      li {
+        display: flex;
+        column-gap: 16px;
+        align-items: center;
+      }
+      li > button {
+        padding: 16px 24px;
+        border-radius: 0;
+        min-width: 150px;
+        font-size: inherit;
+      }
+      li > span {
+        font-size: 42px;
+      }
+      .title {
+        display: flex;
+        column-gap: 24px;
+      }
+      button.reset {
+        padding: 8px 16px;
+        border-radius: 0;
+        min-width: 150px;
+        font-size: 24px;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+    </style>
   </head>
 
   <body>
-    <div id="mediaPlayer" style="height: 270px; width: 480px"></div>
-    <script type="text/javascript">
-      require(["bump-4"], function (bump) {
-        var settings = {
-          product: "iplayer",
-          responsive: true,
-          counterName: "smp.demopage.player.page",
-          playlistObject: {
-            title: "Butterfly photobombs koala film shoot at Australia zoo",
-            holdingImageURL:
-              "https://ichef.bbci.co.uk/images/ic/$recipe/p049srmr.jpg",
-            items: [
-              {
-                versionID: "p049sq7k",
-                kind: "programme",
-                duration: 37,
-              },
-            ],
-          },
-          statsObject: { clipPID: "p049sq7f" },
-          enableToucan: true,
-        };
-        var mediaPlayer = bump.player(
-          document.getElementById("mediaPlayer"),
-          settings
-        );
-
-        mediaPlayer.loadPlugin(
-          {
-            j2: "plugin.js",
-          },
-          {
-            data: { chicken: "egg" },
-          }
-        );
-
-        mediaPlayer.load();
-      });
-    </script>
+    <div id="root" style="height: 270px; width: 480px"></div>
   </body>
 </html>
