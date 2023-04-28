@@ -56,6 +56,7 @@ export const Store = {
       isCalling && action.callback(this.value);
     });
   },
+
   /**
    * @param {{
    *    shouldComponentUpdate?: (currentState: typeof initialState, nextState: typeof initialState )=> boolean;
