@@ -1,3 +1,3 @@
 ## About
 
-- State management logic using vanila JAvascript
+- Store management logic using vanila JAvascript

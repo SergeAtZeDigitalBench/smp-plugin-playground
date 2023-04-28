@@ -23,6 +23,17 @@ export const initialState = {
 const actions = new Set();
 
 const isFunc = (maybeFunc) => typeof maybeFunc === "function";
+const isValidAction = (maybeAction) => {
+  let isValid = true;
+  if (
+    !!maybeAction.shouldComponentUpdate &&
+    !isFunc(maybeAction.shouldComponentUpdate)
+  ) {
+    isValid = false;
+  }
+
+  return isValid && isFunc(maybeAction.callback);
+};
 
 export const State = {
   value: initialState,
@@ -53,7 +64,7 @@ export const State = {
    * @returns {() => void} unsubscriber function
    */
   subscribe(newAction) {
-    if (!isFunc(newAction.callback)) {
+    if (!isValidAction(newAction)) {
       return;
     }
 
