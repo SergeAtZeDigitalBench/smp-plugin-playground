@@ -8,8 +8,8 @@ function main() {
     <h1>Store management</h1>
     <hr/>
     <div>
-        <ul class="listLanguages"></ul>
         <ul class="listFrameworks"></ul>
+        <ul class="listLanguages"></ul>
     </div>
   </div>
   `;
