@@ -113,3 +113,17 @@ export const renderFrameworksList = (
     },
   });
 };
+
+/**
+ * Description placeholder
+ * @date 28/04/2023 - 15:56:04
+ *
+ * @param {HTMLDivElement} rootDivElement
+ * @param {()=>void} onReset
+ */
+export const renderResetButton = (rootDivElement, onReset) => {
+  const button = document.createElement("button");
+  button.onclick = () => onReset();
+  button.innerHTML = "reset all";
+  rootDivElement.appendChild(button);
+};

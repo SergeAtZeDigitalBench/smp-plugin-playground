@@ -1,4 +1,5 @@
 import { toggleTabValue } from "../lib/index.js";
+import { reducer } from "./reducer.js";
 
 export const initialState = {
   languages: {
@@ -17,7 +18,7 @@ export const initialState = {
 /**
  * @type { {[x:string]: Set<(state: typeof initialState)=>void;>}}
  */
-let actions = {};
+let subscriptions = {};
 
 const isFunc = (maybeFunc) => typeof maybeFunc === "function";
 const isValidEvent = (maybeEvent) => {
@@ -26,7 +27,6 @@ const isValidEvent = (maybeEvent) => {
     typeof maybeEvent.payload === "string"
   );
 };
-
 const isValidAction = (maybeAction) => {
   let isValid = true;
   if (typeof maybeAction.type !== "string") {
@@ -53,15 +53,9 @@ export const Store = {
       );
     }
 
-    const { type: tabName, payload: propertyName } = event;
+    this.value = reducer(this.getState(), event);
 
-    this.value = toggleTabValue({
-      tabName,
-      propertyName,
-      state: this.getState(),
-    });
-
-    actions[event.type].forEach((fn) => fn(this.value));
+    subscriptions[event.type].forEach((fn) => fn && fn(this.value));
   },
 
   /**
@@ -75,14 +69,14 @@ export const Store = {
     if (!isValidAction(newAction)) {
       return;
     }
-    if (!actions[newAction.type]) {
-      actions[newAction.type] = new Set();
+    if (!subscriptions[newAction.type]) {
+      subscriptions[newAction.type] = new Set();
     }
 
-    actions[newAction.type].add(newAction.callback);
+    subscriptions[newAction.type].add(newAction.callback);
 
     return () => {
-      actions[newAction.type].delete(newAction.callback);
+      subscriptions[newAction.type].delete(newAction.callback);
     };
   },
 };

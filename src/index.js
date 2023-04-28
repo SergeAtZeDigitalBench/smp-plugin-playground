@@ -1,5 +1,9 @@
 import { Store } from "./store/index.js";
-import { renderLanguagesList, renderFrameworksList } from "./ui/index.js";
+import {
+  renderLanguagesList,
+  renderFrameworksList,
+  renderResetButton,
+} from "./ui/index.js";
 
 function main() {
   const root = document.getElementById("root");
@@ -16,20 +20,42 @@ function main() {
   `;
   const listLanguagesElement = root.querySelector("ul.listLanguages");
   const listFrameworksElement = root.querySelector("ul.listFrameworks");
+  const divContainerElement = root.querySelector(":scope > div");
+  /**
+   * @type {typeof Store.publish}
+   */
+  const publish = Store.publish.bind(Store);
+  /**
+   * @type {typeof Store.subscribe}
+   */
+  const subscribe = Store.subscribe.bind(Store);
 
   renderLanguagesList(
     listLanguagesElement,
     Store.getState(),
-    Store.publish.bind(Store),
-    Store.subscribe.bind(Store)
+    publish,
+    subscribe
   );
 
   renderFrameworksList(
     listFrameworksElement,
     Store.getState(),
-    Store.publish.bind(Store),
-    Store.subscribe.bind(Store)
+    publish,
+    subscribe
   );
+
+  renderResetButton(divContainerElement, () =>
+    publish({ type: "resetAll", payload: "" })
+  );
+
+  subscribe({
+    type: "resetAll",
+    callback: (newState) => {
+      renderLanguagesList(listLanguagesElement, newState, publish, subscribe);
+
+      renderFrameworksList(listFrameworksElement, newState, publish, subscribe);
+    },
+  });
 }
 
 main();
