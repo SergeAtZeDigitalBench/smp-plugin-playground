@@ -1,42 +1,92 @@
 import { State } from "./store/index.js";
 
-const addTwo = () => {
-  State.add(2);
-};
+/**
+ * @param {string} name
+ * @param {()=>void} onClick
+ * @param {boolean} isSelected
+ * @returns {HTMLLIElement}
+ */
+const createListItem = (name, onClick, isSelected) => {
+  const li = document.createElement("li");
+  const button = document.createElement("button");
+  const span = document.createElement("span");
+  span.innerHTML = isSelected ? " x" : "";
+  button.innerHTML = name;
+  button.onclick = () => onClick(name);
+  li.append(button, span);
 
-const addThree = () => {
-  State.add(3);
+  return li;
 };
 
 /**
- * @param {HTMLDivElement} rootElement
+ * @param {HTMLUListElement} rootUlElement
+ * @param {typeof State.value} state
+ * @param {typeof State.publish} publish
+ * @returns {undefined} void fn
  */
-const renderCounter = (rootElement) => {
-  rootElement.querySelector(
-    "h3.counter"
-  ).textContent = `State.value: ${State.value}`;
+const renderLanguagesList = (rootUlElement, state, publish) => {
+  const { languages } = state;
+
+  const toggleLanguage = (languageName) => {
+    const newEntries = Object.entries(languages).map(([name, isSelected]) => [
+      name,
+      languageName === name,
+    ]);
+    const newLanguages = Object.fromEntries(newEntries);
+
+    const newState = {
+      ...state,
+      languages: newLanguages,
+    };
+    publish(newState);
+  };
+
+  const listItems = Object.entries(languages).map(([name, isSelected]) => {
+    return createListItem(name, toggleLanguage, isSelected);
+  });
+  rootUlElement.innerHTML = "";
+  rootUlElement.append(...listItems);
 };
 
 function main() {
   const root = document.getElementById("root");
   root.innerHTML = `
   <div>
-    <h1>Hello World!</h1>
+    <h1>State management</h1>
+    <hr/>
     <div>
-        <button class="btn">add 2</button>
-        <button class="btn">add 3</button>
-        <h3 class="counter">State.value: ${State.value}</h3>
+        <ul class="listLanguages"></ul>
+        <ul class="listFrameworks"></ul>
     </div>
   </div>
   `;
+  const listLanguagesElement = root.querySelector("ul.listLanguages");
+  renderLanguagesList(
+    listLanguagesElement,
+    State.getState(),
+    State.publish.bind(State)
+  );
 
-  State.listen(() => renderCounter(root));
+  State.subscribe({
+    shouldComponentUpdate: (current, next) => {
+      return (
+        JSON.stringify(current.languages) !== JSON.stringify(next.languages)
+      );
+    },
+    callback: (state) => {
+      renderLanguagesList(
+        listLanguagesElement,
+        state,
+        State.publish.bind(State)
+      );
+    },
+  });
 
-  const [one, two] = root.querySelectorAll("button.btn");
-  one.onclick = addTwo;
-  two.onclick = addThree;
-
-  console.log("State.value: ", State.value);
+  State.subscribe({
+    callback: (newState) => {
+      console.log("newState: ", newState);
+    },
+  });
 }
 
 main();

@@ -1,21 +1,66 @@
-let listeners = new Set();
+export const initialState = {
+  languages: {
+    javascript: true,
+    rust: false,
+    go: false,
+  },
+  frameworks: {
+    nextJs: true,
+    gatsby: false,
+    vue: false,
+    angular: false,
+    svelte: false,
+  },
+};
+/**
+ * @type { Set<
+ *  {
+ *   shouldComponentUpdate?: (currentState: typeof initialState, nextState: typeof initialState )=> boolean;
+ *   callback: (state: typeof initialState)=>void;
+ * }>
+ * }
+ */
+const actions = new Set();
 
 const isFunc = (maybeFunc) => typeof maybeFunc === "function";
 
 export const State = {
-  value: 0,
-  add(n) {
-    this.value += n;
-    listeners.forEach((fn) => isFunc(fn) && fn());
+  value: initialState,
+
+  getState() {
+    return this.value;
   },
-  listen(cb) {
-    if (!isFunc(cb)) {
+
+  /**
+   * @param {typeof initialState} newState
+   */
+  publish(newState) {
+    const prevState = { ...this.value };
+    this.value = { ...prevState, ...newState };
+
+    actions.forEach((action) => {
+      const isCalling = action.shouldComponentUpdate
+        ? action.shouldComponentUpdate(prevState, newState)
+        : true;
+      isCalling && action.callback(this.value);
+    });
+  },
+  /**
+   * @param {{
+   *    shouldComponentUpdate?: (currentState: typeof initialState, nextState: typeof initialState )=> boolean;
+   *    callback: (state: typeof initialState)=>void;
+   * }} newAction
+   * @returns {() => void} unsubscriber function
+   */
+  subscribe(newAction) {
+    if (!isFunc(newAction.callback)) {
       return;
     }
 
-    listeners.add(cb);
+    actions.add(newAction);
+
     return () => {
-      listeners = listeners.delete(cb);
+      actions.delete(newAction);
     };
   },
 };
