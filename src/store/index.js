@@ -1,3 +1,5 @@
+import { toggleTabValue } from "../lib/index.js";
+
 export const initialState = {
   languages: {
     javascript: true,
@@ -13,22 +15,21 @@ export const initialState = {
   },
 };
 /**
- * @type { Set<
- *  {
- *   shouldComponentUpdate?: (currentState: typeof initialState, nextState: typeof initialState )=> boolean;
- *   callback: (state: typeof initialState)=>void;
- * }>
- * }
+ * @type { {[x:string]: Set<(state: typeof initialState)=>void;>}}
  */
-const actions = new Set();
+let actions = {};
 
 const isFunc = (maybeFunc) => typeof maybeFunc === "function";
+const isValidEvent = (maybeEvent) => {
+  return (
+    typeof maybeEvent.type === "string" &&
+    typeof maybeEvent.payload === "string"
+  );
+};
+
 const isValidAction = (maybeAction) => {
   let isValid = true;
-  if (
-    !!maybeAction.shouldComponentUpdate &&
-    !isFunc(maybeAction.shouldComponentUpdate)
-  ) {
+  if (typeof maybeAction.type !== "string") {
     isValid = false;
   }
 
@@ -39,28 +40,34 @@ export const Store = {
   value: initialState,
 
   getState() {
-    return this.value;
+    return { ...this.value };
   },
 
   /**
-   * @param {typeof initialState} newState
+   * @param {{type: string, payload: string}} event
    */
-  publish(newState) {
-    const prevState = { ...this.value };
-    this.value = { ...prevState, ...newState };
+  publish(event) {
+    if (!isValidEvent(event)) {
+      throw new Error(
+        "Event type is invalid,\n expected {type: string, payload: string}"
+      );
+    }
 
-    actions.forEach((action) => {
-      const isCalling = action.shouldComponentUpdate
-        ? action.shouldComponentUpdate(prevState, newState)
-        : true;
-      isCalling && action.callback(this.value);
+    const { type: tabName, payload: propertyName } = event;
+
+    this.value = toggleTabValue({
+      tabName,
+      propertyName,
+      state: this.getState(),
     });
+
+    actions[event.type].forEach((fn) => fn(this.value));
   },
 
   /**
    * @param {{
-   *    shouldComponentUpdate?: (currentState: typeof initialState, nextState: typeof initialState )=> boolean;
-   *    callback: (state: typeof initialState)=>void;
+   *   type: string,
+   *   callback: (state: typeof initialState)=>void;
    * }} newAction
    * @returns {() => void} unsubscriber function
    */
@@ -68,11 +75,14 @@ export const Store = {
     if (!isValidAction(newAction)) {
       return;
     }
+    if (!actions[newAction.type]) {
+      actions[newAction.type] = new Set();
+    }
 
-    actions.add(newAction);
+    actions[newAction.type].add(newAction.callback);
 
     return () => {
-      actions.delete(newAction);
+      actions[newAction.type].delete(newAction.callback);
     };
   },
 };

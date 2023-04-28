@@ -1,9 +1,8 @@
 import { Store } from "../store/index.js";
-import { toggleTabValue } from "../lib/index.js";
 
 /**
  * @param {string} name
- * @param {(name: string)=>void} onClick
+ * @param {()=>void} onClick
  * @param {boolean} isSelected
  * @returns {HTMLLIElement}
  */
@@ -13,7 +12,9 @@ const createListItem = (name, onClick, isSelected) => {
   const span = document.createElement("span");
   span.innerHTML = isSelected ? " x" : "";
   button.innerHTML = name;
+
   button.onclick = () => onClick(name);
+
   li.append(button, span);
 
   return li;
@@ -23,25 +24,92 @@ const createListItem = (name, onClick, isSelected) => {
  * @param {HTMLUListElement} rootUlElement
  * @param {typeof Store.value} state
  * @param {typeof Store.publish} publish
+ * @param {typeof Store.subscribe} subscribe
  * @returns {undefined} void fn
  */
-export const renderLanguagesList = (rootUlElement, state, publish) => {
+export const renderLanguagesList = (
+  rootUlElement,
+  state,
+  publish,
+  subscribe
+) => {
   const { languages } = state;
 
-  const toggleLanguage = (languageName) => {
-    const newStoreValue = toggleTabValue({
-      tabName: "languages",
-      propertyName: languageName,
-      state,
+  /**
+   * @param {string} propertyName
+   */
+  const onClick = (propertyName) => {
+    publish({
+      type: "languages",
+      payload: propertyName,
     });
-
-    publish(newStoreValue);
   };
 
   const listItems = Object.entries(languages).map(([name, isSelected]) => {
-    return createListItem(name, toggleLanguage, isSelected);
+    return createListItem(name, onClick, isSelected);
   });
 
   rootUlElement.innerHTML = "";
   rootUlElement.append(...listItems);
+
+  subscribe({
+    type: "languages",
+    callback: (state) => {
+      const listItems = Object.entries(state.languages).map(
+        ([name, isSelected]) => {
+          return createListItem(name, onClick, isSelected);
+        }
+      );
+
+      rootUlElement.innerHTML = "";
+      rootUlElement.append(...listItems);
+    },
+  });
+};
+
+/**
+ * @param {HTMLUListElement} rootUlElement
+ * @param {typeof Store.value} state
+ * @param {typeof Store.publish} publish
+ * @param {typeof Store.subscribe} subscribe
+ * @returns {undefined} void fn
+ */
+export const renderFrameworksList = (
+  rootUlElement,
+  state,
+  publish,
+  subscribe
+) => {
+  const { frameworks } = state;
+
+  /**
+   * @param {string} propertyName
+   */
+  const onClick = (propertyName) => {
+    publish({
+      type: "frameworks",
+      payload: propertyName,
+    });
+  };
+
+  const listItems = Object.entries(frameworks).map(([name, isSelected]) => {
+    return createListItem(name, onClick, isSelected);
+  });
+
+  rootUlElement.innerHTML = "";
+  rootUlElement.append(...listItems);
+
+  subscribe({
+    type: "frameworks",
+    callback: (state) => {
+      const listItems = Object.entries(state.frameworks).map(
+        ([name, isSelected]) => {
+          return createListItem(name, onClick, isSelected);
+        }
+      );
+
+      rootUlElement.innerHTML = "";
+      rootUlElement.append(...listItems);
+    },
+  });
 };

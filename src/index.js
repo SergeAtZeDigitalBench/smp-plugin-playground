@@ -1,5 +1,5 @@
 import { Store } from "./store/index.js";
-import { renderLanguagesList } from "./ui/index.js";
+import { renderLanguagesList, renderFrameworksList } from "./ui/index.js";
 
 function main() {
   const root = document.getElementById("root");
@@ -14,32 +14,21 @@ function main() {
   </div>
   `;
   const listLanguagesElement = root.querySelector("ul.listLanguages");
+  const listFrameworksElement = root.querySelector("ul.listFrameworks");
+
   renderLanguagesList(
     listLanguagesElement,
     Store.getState(),
-    Store.publish.bind(Store)
+    Store.publish.bind(Store),
+    Store.subscribe.bind(Store)
   );
 
-  Store.subscribe({
-    shouldComponentUpdate: (current, next) => {
-      return (
-        JSON.stringify(current.languages) !== JSON.stringify(next.languages)
-      );
-    },
-    callback: (state) => {
-      renderLanguagesList(
-        listLanguagesElement,
-        state,
-        Store.publish.bind(Store)
-      );
-    },
-  });
-
-  Store.subscribe({
-    callback: (newState) => {
-      console.log("newState: ", newState);
-    },
-  });
+  renderFrameworksList(
+    listFrameworksElement,
+    Store.getState(),
+    Store.publish.bind(Store),
+    Store.subscribe.bind(Store)
+  );
 }
 
 main();
