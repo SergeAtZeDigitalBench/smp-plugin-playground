@@ -9,7 +9,9 @@ function main() {
   const root = document.getElementById("root");
   root.innerHTML = `
   <div>
-    <h1>Store management</h1>
+    <div class="title">
+        <h1>Store management</h1>
+    </div>
     <hr/>
     <div>
         <ul class="listFrameworks"></ul>
@@ -20,7 +22,7 @@ function main() {
   `;
   const listLanguagesElement = root.querySelector("ul.listLanguages");
   const listFrameworksElement = root.querySelector("ul.listFrameworks");
-  const divContainerElement = root.querySelector(":scope > div");
+  const divContainerElement = root.querySelector("div.title");
   /**
    * @type {typeof Store.publish}
    */

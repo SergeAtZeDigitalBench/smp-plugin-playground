@@ -10,7 +10,7 @@ const createListItem = (name, onClick, isSelected) => {
   const li = document.createElement("li");
   const button = document.createElement("button");
   const span = document.createElement("span");
-  span.innerHTML = isSelected ? " x" : "";
+  span.innerHTML = isSelected ? " ✅" : "";
   button.innerHTML = name;
 
   button.onclick = () => onClick(name);
@@ -123,6 +123,7 @@ export const renderFrameworksList = (
  */
 export const renderResetButton = (rootDivElement, onReset) => {
   const button = document.createElement("button");
+  button.classList.add("reset");
   button.onclick = () => onReset();
   button.innerHTML = "reset all";
   rootDivElement.appendChild(button);
