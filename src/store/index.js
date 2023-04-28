@@ -35,7 +35,7 @@ const isValidAction = (maybeAction) => {
   return isValid && isFunc(maybeAction.callback);
 };
 
-export const State = {
+export const Store = {
   value: initialState,
 
   getState() {

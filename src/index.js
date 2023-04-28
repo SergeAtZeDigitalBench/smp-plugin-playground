@@ -1,4 +1,5 @@
-import { State } from "./store/index.js";
+import { Store } from "./store/index.js";
+import { toggleTabValue } from "./lib/index.js";
 
 /**
  * @param {string} name
@@ -20,25 +21,21 @@ const createListItem = (name, onClick, isSelected) => {
 
 /**
  * @param {HTMLUListElement} rootUlElement
- * @param {typeof State.value} state
- * @param {typeof State.publish} publish
+ * @param {typeof Store.value} state
+ * @param {typeof Store.publish} publish
  * @returns {undefined} void fn
  */
 const renderLanguagesList = (rootUlElement, state, publish) => {
   const { languages } = state;
 
   const toggleLanguage = (languageName) => {
-    const newEntries = Object.entries(languages).map(([name, isSelected]) => [
-      name,
-      languageName === name,
-    ]);
-    const newLanguages = Object.fromEntries(newEntries);
+    const newStoreValue = toggleTabValue({
+      tabName: "languages",
+      propertyName: languageName,
+      state,
+    });
 
-    const newState = {
-      ...state,
-      languages: newLanguages,
-    };
-    publish(newState);
+    publish(newStoreValue);
   };
 
   const listItems = Object.entries(languages).map(([name, isSelected]) => {
@@ -52,7 +49,7 @@ function main() {
   const root = document.getElementById("root");
   root.innerHTML = `
   <div>
-    <h1>State management</h1>
+    <h1>Store management</h1>
     <hr/>
     <div>
         <ul class="listLanguages"></ul>
@@ -63,11 +60,11 @@ function main() {
   const listLanguagesElement = root.querySelector("ul.listLanguages");
   renderLanguagesList(
     listLanguagesElement,
-    State.getState(),
-    State.publish.bind(State)
+    Store.getState(),
+    Store.publish.bind(Store)
   );
 
-  State.subscribe({
+  Store.subscribe({
     shouldComponentUpdate: (current, next) => {
       return (
         JSON.stringify(current.languages) !== JSON.stringify(next.languages)
@@ -77,12 +74,12 @@ function main() {
       renderLanguagesList(
         listLanguagesElement,
         state,
-        State.publish.bind(State)
+        Store.publish.bind(Store)
       );
     },
   });
 
-  State.subscribe({
+  Store.subscribe({
     callback: (newState) => {
       console.log("newState: ", newState);
     },
